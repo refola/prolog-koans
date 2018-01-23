@@ -1,30 +1,79 @@
-:- module(about_lists, 
-	[my_first/2, my_last/2, my_penultimate/2, my_element_at/3,
-	my_number_of/2, my_reverse/2, is_palindrome/1, my_flatten/2,
-	my_compress/2, my_pack/2, my_encode/2, my_encode_modified/2,
-	my_encode_reverse/2, my_encode_direct/2, my_duplicate/2,
-	my_duplicate_for_n/3, my_drop/3, my_split/4, my_slice/4,
-	my_rotate/3, remove_at/4, insert_at/4, range/3]).
+:- module(about_lists,
+  [my_first/2, my_last/2, my_penultimate/2, my_element_at/3,
+   my_number_of/2, my_reverse/2, is_palindrome/1, my_flatten/2,
+   my_compress/2, my_pack/2, my_encode/2, my_encode_modified/2,
+   my_encode_reverse/2, my_encode_direct/2, my_duplicate/2,
+   my_duplicate_for_n/3, my_drop/3, my_split/4, my_slice/4,
+   my_rotate/3, remove_at/4, insert_at/4, range/3]).
 
-my_first(_,_) :- false.
+% Is X the successor of Y?
+s(X,Y) :- X #= Y + 1.
 
+% X is the head of the list.
+my_first(X,[X|_]).
+
+% X is the tail (of the tail (of the tail (...))) of the list.
 my_last(X, [X]).
-my_last(_,_) :- false.
+% If there are multiple items, just keep chopping off the head.
+my_last(X, [_|T]) :-
+    my_last(X, T).
 
-my_penultimate(_,_) :- false.
-my_penultimate(X, [_|T]) :- my_penultimate(X, T).
+% Same as above, only stop one step sooner.
+my_penultimate(X, [X,_]).
+my_penultimate(X, [_|Rest]) :-
+    my_penultimate(X, Rest).
 
-my_element_at(X,[X|_],1).
-my_element_at(_,_,_) :- false.
+% At position 1, X is the head of the list.
+my_element_at(X, [X|_],1).
 
+% At position n, X is at position n-1 of the list's tail.
+my_element_at(X, [_|Rest],N) :-
+    N > 1, % How necessary is this for correctness? Is it just to
+           % avoid infinite loops if N<1 is passed?
+    N1 is N-1,
+    my_element_at(X, Rest, N1).
+
+% Count how many elements are in a list.
 my_number_of(0,[]).
-my_number_of(_,_) :- false.
+my_number_of(N,[_|T]) :-
+    my_number_of(M,T),
+    s(N,M).
 
-my_reverse(_,_) :- false.
+% Reverse a list. Base case: Singleton lists are already reversed.
+my_reverse([X], [X]) :- true.
+% Recursive case: Appending the head to the reverse of the tail yields
+% the reverse.
+my_reverse(L1,L2) :-
+    [H1 | T1] = L1,
+    my_reverse(T1, T2),
+    append(T2, [H1], L2).
 
-is_palindrome(_) :- false.
+% Is the list the same when reversed?
+is_palindrome(X) :-
+    my_reverse(X, X).
 
-my_flatten(_,_) :- false.
+%% Flatten a list X such that the output Flat f has the same order of
+%% underlying non-list elements but in a single list.
+%/* An empty list goes to itself.
+my_flatten([],[]).%*/
+%/* A non-list X maps to the list [X].
+my_flatten(X, Flat) :-
+    format("~w elt> ", [X]),
+    \+ is_list(X), % X is not a list
+    Flat = [X],
+    format("~w.elt~n", [Flat]).
+%*/
+%/* Appending a flattened head and a flattened tail yields a flattened list.
+my_flatten(X, Flat) :-
+    is_list(X) = true, % Because of explicitly handling the X equals [] case above, we know that H exists. Does this handle when X equals [[]]?
+    format("~w list> ", [X]),
+    [H | T] = X,
+    format("(H:~w, T:~w)", [H,T]),
+    my_flatten(H, FlatH),
+    my_flatten(T, FlatT),
+    append(FlatH, FlatT, Flat),
+    format("~w.list~n", [Flat]).
+%*/
 
 my_compress(_,_) :- false.
 
