@@ -1,3 +1,5 @@
+Note: This fork is mainly for my solutions. Please see the upstream repo if you want to use this to learn Prolog.
+
 Note: still very much in progress
 
 prolog-koans
