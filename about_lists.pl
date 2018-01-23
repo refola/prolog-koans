@@ -54,26 +54,17 @@ is_palindrome(X) :-
 
 %% Flatten a list X such that the output Flat f has the same order of
 %% underlying non-list elements but in a single list.
-%/* An empty list goes to itself.
-my_flatten([],[]).%*/
-%/* A non-list X maps to the list [X].
+% An empty list goes to itself.
+my_flatten([],[]).
+% A non-list X maps to the list [X].
 my_flatten(X, Flat) :-
-    format("~w elt> ", [X]),
     \+ is_list(X), % X is not a list
-    Flat = [X],
-    format("~w.elt~n", [Flat]).
-%*/
-%/* Appending a flattened head and a flattened tail yields a flattened list.
-my_flatten(X, Flat) :-
-    is_list(X) = true, % Because of explicitly handling the X equals [] case above, we know that H exists. Does this handle when X equals [[]]?
-    format("~w list> ", [X]),
-    [H | T] = X,
-    format("(H:~w, T:~w)", [H,T]),
+    Flat = [X].
+% Appending a flattened head and a flattened tail yields a flattened list.
+my_flatten([H|T], Flat) :-
     my_flatten(H, FlatH),
     my_flatten(T, FlatT),
-    append(FlatH, FlatT, Flat),
-    format("~w.list~n", [Flat]).
-%*/
+    append(FlatH, FlatT, Flat).
 
 my_compress(_,_) :- false.
 
