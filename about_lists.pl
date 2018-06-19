@@ -78,27 +78,21 @@ my_flatten([H|T], Flat) :-
 
 % Remove all but the first in runs of duplicate elements.
 my_compress(Orig, Deduped) :-
-    same_sequence(Orig, Deduped),
+    fluffier(Orig, Deduped),
     compressed(Deduped).
-% Do the two lists follow the same sequence?
-same_sequence([], []).
-same_sequence([X], [X]).
-same_sequence(Xs, Ys) :- % duplicate X case
+% Is the first argument "fluffier" (less compressed) than the second?
+fluffier([], []).
+fluffier([X], [X]).
+fluffier(Xs, Ys) :- % duplicate or removed X case
     append(FirstXs, [LastX], Xs),
     append(_, [PenultimateX], FirstXs),
     PenultimateX == LastX,
-    same_sequence(FirstXs, Ys).
-same_sequence(Xs, Ys) :- % duplicate Y case
-    append(FirstYs, [LastY], Ys),
-    append(_, [PenultimateY], FirstYs),
-    PenultimateY == LastY,
-    same_sequence(Xs, FirstYs).
-same_sequence(Xs, Ys) :- % same new X and Y case
+    fluffier(FirstXs, Ys).
+fluffier(Xs, Ys) :- % same new X and Y case
     append(FirstXs, [LastX], Xs),
     append(FirstYs, [LastY], Ys),
     LastX == LastY,
-    same_sequence(FirstXs, FirstYs).
-
+    fluffier(FirstXs, FirstYs).
 % Are consecutive items always unique?
 compressed([]).
 compressed([X]).
