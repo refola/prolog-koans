@@ -77,7 +77,36 @@ my_flatten([H|T], Flat) :-
 %*/ my_flatten(Xs, Flat) :- flatten(Xs, Flat).
 
 % Remove all but the first in runs of duplicate elements.
-my_compress(Orig,Deduped) :- false.
+my_compress(Orig, Deduped) :-
+    same_sequence(Orig, Deduped),
+    compressed(Deduped).
+% Do the two lists follow the same sequence?
+same_sequence([], []).
+same_sequence([X], [X]).
+same_sequence(Xs, Ys) :- % duplicate X case
+    append(FirstXs, [LastX], Xs),
+    append(_, [PenultimateX], FirstXs),
+    PenultimateX == LastX,
+    same_sequence(FirstXs, Ys).
+same_sequence(Xs, Ys) :- % duplicate Y case
+    append(FirstYs, [LastY], Ys),
+    append(_, [PenultimateY], FirstYs),
+    PenultimateY == LastY,
+    same_sequence(Xs, FirstYs).
+same_sequence(Xs, Ys) :- % same new X and Y case
+    append(FirstXs, [LastX], Xs),
+    append(FirstYs, [LastY], Ys),
+    LastX == LastY,
+    same_sequence(FirstXs, FirstYs).
+
+% Are consecutive items always unique?
+compressed([]).
+compressed([X]).
+compressed(Xs) :-
+    append(Firsts, [Last], Xs),
+    compressed(Firsts),
+    append(_, [Penultimate], Firsts),
+    Penultimate \== Last.
 
 my_pack(_,_) :- false.
 
