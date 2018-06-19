@@ -83,7 +83,7 @@ my_compress(Orig, Deduped) :-
 % Is the first argument "fluffier" (less compressed) than the second?
 fluffier([], []).
 fluffier([X], [X]).
-fluffier(Xs, Ys) :- % duplicate or removed X case
+fluffier(Xs, Ys) :- % duplicate X case
     append(FirstXs, [LastX], Xs),
     append(_, [PenultimateX], FirstXs),
     PenultimateX == LastX,
@@ -95,7 +95,7 @@ fluffier(Xs, Ys) :- % same new X and Y case
     fluffier(FirstXs, FirstYs).
 % Are consecutive items always unique?
 compressed([]).
-compressed([X]).
+compressed([_]).
 compressed(Xs) :-
     append(Firsts, [Last], Xs),
     compressed(Firsts),
