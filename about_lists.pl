@@ -102,7 +102,17 @@ compressed(Xs) :-
     append(_, [Penultimate], Firsts),
     Penultimate \== Last.
 
-my_pack(_,_) :- false.
+% Group runs of the same entry into their own sublists.
+my_pack(L, Packed) :-
+    flatten(Packed, L),
+    well_packed(Packed).
+well_packed([]).
+well_packed([X]) :-
+    [H|_] = X,
+    fluffier(X, [H]).
+well_packed([H|T]) :-
+    well_packed([H]),
+    well_packed(T).
 
 my_encode(_,_) :- false.
 
